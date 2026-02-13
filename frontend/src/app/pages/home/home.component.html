@@ -1,0 +1,46 @@
+<div class="bg-gray-50 min-h-screen pb-12">
+  <!-- Hero Section -->
+  <div class="bg-indigo-700 text-white py-16 px-6 mb-10 shadow-lg">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-extrabold mb-4">歡迎來到動態問卷平台</h1>
+      <p class="text-xl text-indigo-100">參與調查，讓我們聽見您的聲音。每一份意見都至關重要。</p>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+      <mat-icon color="primary">assignment</mat-icon>
+      進行中的問卷
+    </h2>
+
+    @if (surveys().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (survey of surveys(); track survey.id) {
+          <mat-card class="hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
+            <mat-card-header>
+              <mat-card-title class="!text-xl !font-bold text-indigo-900">{{ survey.title }}</mat-card-title>
+              <mat-card-subtitle>開放至 {{ survey.endDate }}</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content class="flex-grow pt-4">
+              <p class="text-gray-600 line-clamp-3">
+                {{ survey.description || '本問卷尚無詳細說明。' }}
+              </p>
+            </mat-card-content>
+
+            <mat-card-actions class="p-4 bg-gray-50 border-t flex justify-end">
+              <button mat-raised-button color="primary" [routerLink]="['/fill', survey.id]">
+                立即填寫 <mat-icon>edit_note</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <div class="bg-white p-12 rounded-xl shadow text-center">
+        <mat-icon class="text-6xl text-gray-300 !h-16 !w-16 mb-4">sentiment_dissatisfied</mat-icon>
+        <p class="text-xl text-gray-500">目前沒有進行中的問卷，請稍後再來。</p>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "primeflex/primeflex.css";
+@import "primeicons/primeicons.css";
+
+:root {
+    --sidebar-width: 80px;
+    --primary-color: #8D6E63;
+    --primary-color-hover: #795548;
+    --bg-beige: #F5F1EE;
+    --border-color: #BCAAA4;
+}
+
+/* 確保 Material 與 PrimeNG 共存時的基礎樣式正確 */
+html,
+body {
+    height: 100%;
+    background-color: var(--bg-beige);
+}
+
+/* 確保 Material 字體與基礎樣式正確 */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* 
+ * [教學重點] 修復 Tailwind 與 Angular Material (MDC) 的衝突
+ * -----------------------------------------------------------------------------
+ * Tailwind 的 Preflight 會重置所有邊框樣式，這會破壞 Material Outline 表單欄位的渲染。
+ * 1. 確保 notch (中間挖槽) 部分沒有左右邊框，避免出現「奇怪的直線」。
+ * 2. 確保 outline 的各個部分繼承正確的邊框顏色與寬度。
+ */
+.mat-mdc-form-field {
+    .mdc-notched-outline__notch {
+        border-left: none !important;
+        border-right: none !important;
+    }
+}
+
+/* 確保按鈕等元件在 Tailwind 下的正確渲染 */
+.mat-mdc-raised-button {
+    @apply shadow-md;
+}

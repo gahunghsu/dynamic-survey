@@ -1,0 +1,161 @@
+/* [教學說明] Survey Editor Custom Earthy Theme Styles */
+
+.editor-shell {
+  font-family: 'Roboto', 'Noto Sans TC', sans-serif;
+
+  // Custom Primary Colors
+  --e-primary: #8D6E63;
+  --e-primary-light: #BCAAA4;
+  --e-primary-dark: #5D4037;
+  --e-bg: #F5F1EE;
+  --e-white: #FFFFFF;
+}
+
+/* Sidebar Styling */
+.editor-sidebar {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+
+  .p-button.p-button-text:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Tab Navigation */
+.custom-tab-btn {
+  background: #D7CCC8;
+  color: #795548;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px 12px 0 0;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+  border: 3px solid transparent;
+  border-bottom: none;
+  margin-bottom: -3px; // Overlap the container border
+
+  &:hover {
+    background: #EFEBE9;
+  }
+
+  &.active {
+    background: var(--e-primary);
+    color: white;
+    border-color: var(--e-primary);
+    z-index: 3;
+  }
+}
+
+/* Central Container */
+.earthy-container {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05) !important;
+  background-image: radial-gradient(circle at 2px 2px, rgba(141, 110, 99, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Form Elements */
+.custom-input {
+  background: #F8F9FA !important;
+  border: 1px solid #E0E0E0 !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: var(--e-primary) !important;
+    box-shadow: 0 0 0 3px rgba(141, 110, 99, 0.1) !important;
+    background: white !important;
+  }
+}
+
+.custom-datepicker {
+  ::ng-deep .p-inputtext {
+    @extend .custom-input;
+  }
+}
+
+/* Custom Buttons */
+.custom-primary-btn {
+  background: var(--e-primary) !important;
+  border: none !important;
+  padding: 12px 32px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(141, 110, 99, 0.2) !important;
+  transition: transform 0.1s, background 0.2s;
+
+  &:hover {
+    background: var(--e-primary-dark) !important;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Question Design Split View */
+.q-pill {
+  border: 2px solid transparent;
+  color: #616161;
+  font-weight: 500;
+
+  &:hover {
+    background: #EEEEEE;
+  }
+
+  &.active-pill {
+    background: #EFEBE9 !important;
+    border-color: var(--e-primary);
+    color: var(--e-primary);
+    font-weight: 700;
+  }
+}
+
+/* PrimeNG Overrides to match theme */
+::ng-deep {
+  .p-selectbutton {
+    .p-button {
+      background: white;
+      border: 1px solid #E0E0E0;
+      color: #616161;
+      font-weight: 600;
+
+      &.p-highlight {
+        background: var(--e-primary) !important;
+        border-color: var(--e-primary) !important;
+        color: white !important;
+      }
+    }
+  }
+
+  .p-checkbox-box.p-highlight {
+    background: var(--e-primary) !important;
+    border-color: var(--e-primary) !important;
+  }
+
+  .p-datepicker {
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D7CCC8;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #BCAAA4;
+}

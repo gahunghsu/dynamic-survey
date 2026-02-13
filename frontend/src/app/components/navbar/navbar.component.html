@@ -1,0 +1,25 @@
+<mat-toolbar color="primary" class="flex justify-between items-center shadow-md">
+  <div class="flex items-center gap-2 cursor-pointer" routerLink="/">
+    <mat-icon>assignment</mat-icon>
+    <span class="text-xl font-bold">動態問卷系統</span>
+  </div>
+
+  <div class="flex items-center gap-4">
+    @if (authService.currentUser()) {
+    <!-- 已登入狀態 -->
+    <span class="text-sm hidden sm:inline">歡迎, {{ authService.currentUser()?.name }}</span>
+
+    <button mat-button routerLink="/admin">問卷管理</button>
+
+    <button mat-button routerLink="/history">我的紀錄</button>
+
+    <button mat-stroked-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon> 登出
+    </button>
+    } @else {
+    <!-- 未登入狀態 -->
+    <button mat-button routerLink="/login">登入</button>
+    <button mat-raised-button color="accent" routerLink="/register">註冊</button>
+    }
+  </div>
+</mat-toolbar>

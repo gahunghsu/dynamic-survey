@@ -1,0 +1,79 @@
+<div class="max-w-5xl mx-auto p-6">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800">{{ stats()?.surveyTitle }}</h1>
+      <p class="text-gray-500 mt-1">
+        總填寫人數：<span class="font-bold text-indigo-600">{{ stats()?.totalResponses }}</span> 人
+      </p>
+    </div>
+    <button mat-stroked-button routerLink="/admin">
+      <mat-icon>arrow_back</mat-icon> 返回列表
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 gap-8">
+    @for (q of stats()?.questionStats; track q.questionId) {
+      <mat-card class="overflow-hidden">
+        <mat-card-header class="bg-gray-50 p-4 border-b">
+          <mat-card-title class="!text-lg">
+            {{ $index + 1 }}. {{ q.questionTitle }}
+            <span class="text-xs font-normal text-gray-400 ml-2">({{ q.type }})</span>
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="p-6">
+          @if (q.type !== 'TEXT') {
+            <div class="flex flex-col md:flex-row items-center gap-8">
+              <!-- 圖表區 -->
+              <div class="w-full md:w-1/2 max-w-[300px]">
+                <canvas baseChart
+                  [data]="getChartData(q)"
+                  [options]="pieChartOptions"
+                  [type]="'pie'">
+                </canvas>
+              </div>
+
+              <!-- 數據清單 -->
+              <div class="w-full md:w-1/2">
+                <table class="w-full text-sm">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="text-left p-2">選項</th>
+                      <th class="text-right p-2">票數</th>
+                      <th class="text-right p-2">百分比</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (optId of (q.optionStats | keyvalue); track optId.key) {
+                      <tr class="border-b">
+                        <td class="p-2">{{ optId.value.optionText }}</td>
+                        <td class="p-2 text-right">{{ optId.value.count }}</td>
+                        <td class="p-2 text-right font-medium text-indigo-600">{{ optId.value.percentage }}%</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          } @else {
+            <!-- 簡答題清單 -->
+            <div class="flex flex-col gap-2">
+              <h4 class="text-sm font-bold text-gray-600 mb-2">填寫內容回饋：</h4>
+              @if (q.textAnswers && q.textAnswers.length > 0) {
+                <div class="max-h-[300px] overflow-y-auto bg-gray-50 rounded p-4">
+                  @for (ans of q.textAnswers; track $index) {
+                    <div class="bg-white p-3 rounded shadow-sm mb-2 border-l-4 border-indigo-400">
+                      {{ ans }}
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-gray-400 italic">目前尚無回答。</p>
+              }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+</div>

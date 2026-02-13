@@ -1,0 +1,178 @@
+<div class="editor-shell flex min-h-screen bg-[#F5F1EE]">
+
+  <!-- Sidebar Navigation (Left) -->
+  <aside class="editor-sidebar flex flex-column align-items-center py-4 bg-[#8D6E63] text-white shadow-2"
+    style="width: 80px;">
+    <div class="sidebar-top flex flex-column gap-4">
+      <button pButton icon="pi pi-list" class="p-button-text text-white p-button-lg" routerLink="/admin"
+        tooltipPosition="right" pTooltip="問卷列表"></button>
+      <button pButton icon="pi pi-plus" class="p-button-text text-white p-button-lg" (click)="activeTab.set(0)"
+        tooltipPosition="right" pTooltip="建立問卷"></button>
+    </div>
+    <div class="sidebar-bottom mt-auto">
+      <button pButton icon="pi pi-sign-out" class="p-button-text text-white p-button-lg" routerLink="/admin"
+        tooltipPosition="right" pTooltip="退出"></button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow-1 flex flex-column overflow-hidden relative">
+
+    <!-- Tab Navigation Overlay -->
+    <div class="tab-nav-wrapper flex gap-1 px-5 mt-4 z-2">
+      <button class="custom-tab-btn" [class.active]="activeTab() === 0" (click)="goToStep(0)">
+        問卷基本資料
+      </button>
+      <button class="custom-tab-btn" [class.active]="activeTab() === 1" (click)="goToStep(1)">
+        問卷題目設定
+      </button>
+    </div>
+
+    <!-- Central Editor Container -->
+    <div class="editor-viewport px-5 pb-5 overflow-y-auto">
+      <div
+        class="earthy-container border-3 border-[#8D6E63] border-round-3xl p-5 bg-[#F5F1EE] min-h-full flex flex-column shadow-1">
+
+        <form [formGroup]="surveyForm" class="flex-grow-1 flex flex-column">
+
+          <!-- STEP 0: 基本資料 -->
+          @if (activeTab() === 0) {
+          <div class="step-content basic-info flex flex-column gap-5 py-4">
+            <div class="form-group flex flex-column gap-2">
+              <label class="font-bold text-700">問卷名稱</label>
+              <input pInputText formControlName="title" placeholder="請輸入問卷名稱(50字以下)"
+                class="p-inputtext-lg w-full custom-input">
+              @if (surveyForm.get('title')?.touched && surveyForm.get('title')?.invalid) {
+              <small class="p-error">標題為必填，且長度不超過50字</small>
+              }
+            </div>
+
+            <div class="form-group flex flex-column gap-2">
+              <label class="font-bold text-700">問卷說明</label>
+              <textarea pTextarea formControlName="description" rows="8" placeholder="請為問卷添加說明(300字以下)"
+                class="w-full custom-input"></textarea>
+            </div>
+
+            <div class="date-row flex gap-4">
+              <div class="form-group flex-1 flex flex-column gap-2">
+                <label class="font-bold text-700">開始日期</label>
+                <p-datepicker formControlName="startDate" [showIcon]="true" dateFormat="yy/mm/dd"
+                  placeholder="yyyy/mm/dd" styleClass="w-full custom-datepicker"></p-datepicker>
+              </div>
+              <div class="form-group flex-1 flex flex-column gap-2">
+                <label class="font-bold text-700">結束日期</label>
+                <p-datepicker formControlName="endDate" [showIcon]="true" dateFormat="yy/mm/dd" placeholder="yyyy/mm/dd"
+                  styleClass="w-full custom-datepicker"></p-datepicker>
+              </div>
+            </div>
+
+            <div class="footer-actions mt-auto flex justify-content-end gap-3 pt-5">
+              <button pButton label="取消" class="p-button-text p-button-plain text-600" routerLink="/admin"></button>
+              <button pButton label="下一步" class="custom-primary-btn" (click)="goToStep(1)"></button>
+            </div>
+          </div>
+          }
+
+          <!-- STEP 1: 題目設定 -->
+          @if (activeTab() === 1) {
+          <div class="step-content question-design flex gap-4 h-full py-4 overflow-hidden">
+
+            <!-- Left: Question Editor -->
+            <div class="q-list-panel flex-1 flex flex-column gap-3 overflow-y-auto pr-3">
+              <h3 class="text-xl font-bold mb-2">題目設計</h3>
+
+              <div formArrayName="questions" class="flex flex-column gap-4">
+                @for (q of questionsArray.controls; track q; let i = $index) {
+                @if (selectedQuestionIndex() === i) {
+                <div [formGroupName]="i"
+                  class="q-edit-card border-round-xl p-4 bg-white shadow-1 flex flex-column gap-4">
+                  <div class="flex flex-column gap-2">
+                    <label class="font-bold">題目</label>
+                    <textarea pTextarea formControlName="title" rows="3" placeholder="請輸入題目(75字以下)"
+                      class="w-full border-1 custom-input"></textarea>
+                  </div>
+
+                  <div class="flex align-items-center gap-2">
+                    <p-checkbox formControlName="required" [binary]="true" inputId="req"></p-checkbox>
+                    <label for="req" class="font-medium">必填</label>
+                  </div>
+
+                  <div class="flex flex-column gap-2">
+                    <label class="font-bold">題目類型</label>
+                    <p-selectButton [options]="questionTypes" formControlName="type" (onChange)="onTypeChange(i)">
+                      <ng-template let-item pTemplate="item">
+                        <div class="flex align-items-center gap-2">
+                          <i [class]="item.icon"></i>
+                          <span>{{item.label}}</span>
+                        </div>
+                      </ng-template>
+                    </p-selectButton>
+                  </div>
+
+                  <!-- Options section -->
+                  @if (q.get('type')?.value !== 'TEXT') {
+                  <div class="options-section flex flex-column gap-2">
+                    <label class="font-bold">選項</label>
+                    <div formArrayName="options" class="flex flex-column gap-2">
+                      @for (opt of getOptionsArray(i).controls; track opt; let j = $index) {
+                      <div [formGroupName]="j" class="flex align-items-center gap-2">
+                        <input pInputText formControlName="optionText" [placeholder]="'選項 ' + (j+1)"
+                          class="flex-grow-1 border-1 custom-input">
+                        <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm"
+                          (click)="removeOption(i, j)" [disabled]="getOptionsArray(i).length <= 1"></button>
+                      </div>
+                      }
+                    </div>
+                    <button pButton label="新增選項" icon="pi pi-plus" class="p-button-text p-button-sm mt-1 w-max"
+                      (click)="addOption(getOptionsArray(i))"></button>
+                  </div>
+                  }
+
+                  <div class="flex justify-content-between mt-3">
+                    <button pButton icon="pi pi-trash" label="刪除題目" class="p-button-text p-button-danger"
+                      [disabled]="questionsArray.length <= 1" (click)="removeQuestion(i)"></button>
+                    <button pButton icon="pi pi-plus" label="新增更多題目" class="p-button-text"
+                      (click)="addQuestion()"></button>
+                  </div>
+                </div>
+                }
+                }
+              </div>
+            </div>
+
+            <!-- Right: Question Preview List -->
+            <div class="q-nav-panel border-left-1 border-200 pl-4" style="width: 320px;">
+              <h3 class="text-xl font-bold mb-3">題目清單</h3>
+              <div class="q-pills flex flex-column gap-2 overflow-y-auto pr-2" style="max-height: 400px;">
+                @for (q of questionsArray.controls; track q; let i = $index) {
+                <div
+                  class="q-pill p-3 border-round-lg cursor-pointer transition-all flex align-items-center justify-content-between"
+                  [class.active-pill]="selectedQuestionIndex() === i" [class.bg-white]="selectedQuestionIndex() !== i"
+                  (click)="selectQuestion(i)">
+                  <span class="truncate pr-2">題目 {{i + 1}}: {{ q.get('title')?.value || '未填寫' }}</span>
+                  <i class="pi pi-chevron-right text-xs"></i>
+                </div>
+                }
+              </div>
+
+              <div class="footer-actions mt-5 flex flex-column gap-2">
+                <button pButton label="返回基本資料" class="p-button-secondary p-button-outlined w-full"
+                  (click)="activeTab.set(0)"></button>
+                <button pButton label="送出問卷" class="custom-primary-btn w-full py-3 text-lg" (click)="onSubmit()"
+                  [disabled]="surveyForm.invalid"></button>
+              </div>
+            </div>
+
+          </div>
+          }
+
+        </form>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast for messages -->
+<p-toast></p-toast>
