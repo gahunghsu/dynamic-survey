@@ -10,4 +10,7 @@ import java.util.List;
 public interface ResponseRepository extends JpaRepository<Response, Long> {
     // 查詢特定使用者的填寫紀錄
     List<Response> findByUserId(Long userId);
+
+    // 檢查問卷是否有任何作答紀錄
+    boolean existsBySurveyId(Long surveyId);
 }

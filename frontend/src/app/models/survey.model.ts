@@ -29,5 +29,6 @@ export interface Survey {
   startDate: string; // ISO date string
   endDate: string;   // ISO date string
   status: SurveyStatus;
+  hasResponses?: boolean; // 新增欄位
   questions: Question[];
 }

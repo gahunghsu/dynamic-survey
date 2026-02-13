@@ -40,7 +40,7 @@ public class PublicSurveyController {
      * [API] 取得問卷詳情 (填寫用)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SurveyDTO> getSurveyById(@PathVariable Long id) {
+    public ResponseEntity<SurveyDTO> getSurveyById(@PathVariable("id") Long id) {
         // 實務上這裡應多檢查該 ID 是否真的處於 PUBLISHED 且在期限內
         return ResponseEntity.ok(surveyService.getSurveyById(id));
     }
@@ -52,7 +52,7 @@ public class PublicSurveyController {
      */
     @PostMapping("/{id}/submit")
     public ResponseEntity<Void> submitResponse(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody com.dynamic_survey.backend.dto.ResponseDTO responseDTO,
             @org.springframework.security.core.annotation.AuthenticationPrincipal com.dynamic_survey.backend.entity.User user
     ) {

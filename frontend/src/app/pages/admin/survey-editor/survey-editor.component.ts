@@ -70,6 +70,11 @@ export class SurveyEditorComponent implements OnInit {
     { label: '簡答題', value: 'TEXT', icon: 'pi pi-align-left' }
   ];
 
+  statusOptions = [
+    { label: '草稿 (暫不公開)', value: 'DRAFT', icon: 'pi pi-pencil' },
+    { label: '發布 (立即公開)', value: 'PUBLISHED', icon: 'pi pi-send' }
+  ];
+
   constructor() {
     this.surveyForm = this.fb.group({
       id: [null],
@@ -176,7 +181,7 @@ export class SurveyEditorComponent implements OnInit {
 
   // --- API Methods ---
   loadSurvey(id: number) {
-    this.surveyService.getSurveyById(id).subscribe({
+    this.surveyService.getAdminSurveyById(id).subscribe({
       next: (survey) => {
         this.surveyForm.patchValue({
           id: survey.id,
@@ -216,7 +221,14 @@ export class SurveyEditorComponent implements OnInit {
 
   onSubmit() {
     if (this.surveyForm.valid) {
-      const formValue = this.surveyForm.value;
+      const formValue = { ...this.surveyForm.value };
+      
+      // 確保 ID 被正確包含 (如果是編輯模式)
+      if (this.surveyId()) {
+        formValue.id = this.surveyId();
+      }
+
+      console.log('Submitting survey:', formValue);
 
       formValue.questions.forEach((q: any, i: number) => {
         q.orderIndex = i;

@@ -51,7 +51,7 @@ export class RegisterComponent {
       this.authService.register(this.registerForm.value).subscribe({
         next: () => {
           this.snackBar.open('註冊成功！', '關閉', { duration: 3000 });
-          this.router.navigate(['/']); // 註冊成功後導向首頁
+          // 導向邏輯已移至 AuthService.handleAuthSuccess 中處理
         },
         error: (err) => {
           const errorMsg = err.error?.message || '註冊失敗，請稍後再試';

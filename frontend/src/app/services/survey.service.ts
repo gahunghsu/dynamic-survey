@@ -37,6 +37,13 @@ export class SurveyService {
   }
 
   /**
+   * [功能] 取得問卷詳情 (管理員編輯用)
+   */
+  getAdminSurveyById(id: number): Observable<Survey> {
+    return this.http.get<Survey>(`${this.ADMIN_API_URL}/${id}`);
+  }
+
+  /**
    * [功能] 取得問卷詳情 (填寫用)
    */
   getSurveyById(id: number): Observable<Survey> {

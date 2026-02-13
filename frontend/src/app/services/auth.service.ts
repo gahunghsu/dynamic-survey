@@ -30,11 +30,16 @@ export class AuthService {
   currentUser = signal<User | null>(null);
 
   constructor() {
-    // 初始化時檢查 localStorage 是否有 Token (實務上這裡可能還會去 call /api/users/me 驗證 Token)
+    // 初始化時檢查 localStorage 是否有 Token
     const token = localStorage.getItem('token');
     if (token) {
-      // 這裡暫時簡單化，實務上應呼叫後端驗證 Token
-      console.log('Token found, user is potentially logged in');
+      // 若有 Token，嘗試取得使用者資訊以恢復登入狀態
+      this.fetchUserProfile().subscribe({
+        error: () => {
+          // 若 Token 無效或使用者不存在，清除 Token
+          localStorage.removeItem('token');
+        }
+      });
     }
   }
 
@@ -75,9 +80,14 @@ export class AuthService {
    */
   private handleAuthSuccess(token: string) {
     localStorage.setItem('token', token);
-    // 登入後，通常會呼叫另一個 API 取得詳細 User 資訊
-    this.fetchUserProfile().subscribe();
-    this.router.navigate(['/']);
+    // 登入後，呼叫 API 取得詳細 User 資訊
+    this.fetchUserProfile().subscribe({
+      next: () => this.router.navigate(['/']),
+      error: () => {
+        localStorage.removeItem('token');
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   /**

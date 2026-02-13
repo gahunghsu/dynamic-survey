@@ -32,7 +32,7 @@ public class AdminSurveyController {
      * [API] 取得單一問卷詳情
      */
     @GetMapping("/{id}")
-    public ResponseEntity<SurveyDTO> getSurveyById(@PathVariable Long id) {
+    public ResponseEntity<SurveyDTO> getSurveyById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(surveyService.getSurveyById(id));
     }
 
@@ -41,7 +41,7 @@ public class AdminSurveyController {
      * GET /api/admin/surveys/{id}/stats
      */
     @GetMapping("/{id}/stats")
-    public ResponseEntity<com.dynamic_survey.backend.dto.SurveyStatsDTO> getSurveyStats(@PathVariable Long id) {
+    public ResponseEntity<com.dynamic_survey.backend.dto.SurveyStatsDTO> getSurveyStats(@PathVariable("id") Long id) {
         return ResponseEntity.ok(surveyService.getSurveyStats(id));
     }
 
@@ -58,7 +58,7 @@ public class AdminSurveyController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<SurveyDTO> updateSurvey(
-            @PathVariable Long id, 
+            @PathVariable("id") Long id, 
             @RequestBody SurveyDTO surveyDTO
     ) {
         surveyDTO.setId(id);
@@ -69,7 +69,7 @@ public class AdminSurveyController {
      * [API] 刪除問卷
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSurvey(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSurvey(@PathVariable("id") Long id) {
         surveyService.deleteSurvey(id);
         return ResponseEntity.noContent().build();
     }

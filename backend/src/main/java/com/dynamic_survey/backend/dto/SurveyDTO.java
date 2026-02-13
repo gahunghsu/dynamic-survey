@@ -26,6 +26,7 @@ public class SurveyDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private Survey.Status status;
+    private boolean hasResponses; // 新增：標記是否有作答紀錄
     private List<QuestionDTO> questions;
 
     @Data

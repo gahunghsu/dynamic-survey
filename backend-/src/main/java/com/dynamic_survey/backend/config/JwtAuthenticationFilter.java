@@ -57,33 +57,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 3. 提取 Token (去除 "Bearer " 前綴)
         jwt = authHeader.substring(7);
 
-        // 4. 解析 Username (若 Token 格式錯誤或過期，這裡可能會拋出異常，Spring Security 會捕捉)
-        userEmail = jwtService.extractUsername(jwt);
+        // 4. 解析 Username (若 Token 格式錯誤或過期，這裡可能會拋出異常)
+        try {
+            userEmail = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            // Token 解析失敗 (過期、格式錯誤等)，直接放行，讓後續 Filter 處理授權
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 5. 若解析成功，且目前 Context 中尚未有認證資訊
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            // 從資料庫載入使用者詳情
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            try {
+                // 從資料庫載入使用者詳情
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            // 驗證 Token 是否有效
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                
-                // 建立認證 Token 物件 (UsernamePasswordAuthenticationToken)
-                // 注意：這裡傳入 userDetails.getAuthorities() 是關鍵，讓 Security 知道該使用者的權限 (ROLE_USER / ROLE_ADMIN)
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+                // 驗證 Token 是否有效
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    
+                    // 建立認證 Token 物件 (UsernamePasswordAuthenticationToken)
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-                // 設定請求詳情 (IP, Session ID 等)
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                    // 設定請求詳情
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
 
-                // [重要] 將認證物件存入 SecurityContext，代表「登入成功」
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // [重要] 將認證物件存入 SecurityContext
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (Exception e) {
+                // 如果找不到使用者或 Token 無效，不代表請求失敗 (可能是公開 API)
+                // 我們不拋出異常，讓 filterChain 往下走，由 SecurityConfig 決定是否攔截
             }
         }
         

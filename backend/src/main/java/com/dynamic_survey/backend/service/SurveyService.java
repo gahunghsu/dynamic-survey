@@ -263,6 +263,9 @@ public class SurveyService {
      */
     @Transactional
     public void deleteSurvey(Long id) {
+        if (responseRepository.existsBySurveyId(id)) {
+            throw new RuntimeException("此問卷已有作答紀錄，無法刪除。");
+        }
         surveyRepository.deleteById(id);
     }
 
@@ -275,6 +278,7 @@ public class SurveyService {
                 .startDate(survey.getStartDate())
                 .endDate(survey.getEndDate())
                 .status(survey.getStatus())
+                .hasResponses(responseRepository.existsBySurveyId(survey.getId())) // 設定是否有作答紀錄
                 .questions(survey.getQuestions().stream().map(q -> 
                     SurveyDTO.QuestionDTO.builder()
                         .id(q.getId())

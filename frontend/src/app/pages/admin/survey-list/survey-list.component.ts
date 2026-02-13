@@ -58,6 +58,25 @@ export class SurveyListComponent implements OnInit {
     this.router.navigate(['/admin/edit', survey.id]);
   }
 
+  toggleStatus(survey: Survey) {
+    const newStatus = survey.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
+    const statusText = newStatus === 'PUBLISHED' ? '發布' : '下架為草稿';
+    
+    // 建立一個更新用的物件，確保包含必要資訊
+    const updatedSurvey: Survey = {
+      ...survey,
+      status: newStatus
+    };
+
+    this.surveyService.saveSurvey(updatedSurvey).subscribe({
+      next: () => {
+        this.snackBar.open(`問卷已${statusText}`, '關閉', { duration: 2000 });
+        this.loadSurveys(); // 刷新列表
+      },
+      error: () => this.snackBar.open('狀態更新失敗', '關閉', { duration: 3000 })
+    });
+  }
+
   onDelete(id: number) {
     if (confirm('確定要刪除這份問卷嗎？此動作無法復原。')) {
       this.surveyService.deleteSurvey(id).subscribe({
