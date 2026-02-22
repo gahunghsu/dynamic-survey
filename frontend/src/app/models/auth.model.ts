@@ -13,6 +13,11 @@ export interface User {
   role: 'USER' | 'ADMIN';
 }
 
+// 修改為對齊 AppResponse 結構
 export interface AuthResponse {
-  token: string;
+  code: number;
+  message: string;
+  data: {
+    token: string;
+  };
 }

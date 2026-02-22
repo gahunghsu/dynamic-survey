@@ -1,21 +1,16 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.0'
-    id 'io.spring.dependency-management' version '1.1.5'
-    id 'eclipse'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
-group = 'com.dynamic_survey'
+group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs << '-parameters'
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 configurations {
@@ -29,28 +24,40 @@ repositories {
 }
 
 dependencies {
+    // [資料庫存取] 提供 JPA 支援與 Hibernate 實作
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     
-    // 顯式加入以解決 Eclipse 辨識問題
-    implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    // [Web 核心] 提供 REST API 開發與 MVC 架構支援
+	implementation 'org.springframework.boot:spring-boot-starter-web'
     
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    // [資料驗證] 提供 @NotBlank, @Size 等 Bean Validation 註解支援
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
     
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // [安全機制] 提供 Spring Security 權限控管與加密支援
+	implementation 'org.springframework.boot:spring-boot-starter-security'
     
-    // JWT Dependency (jjwt)
+    // [JWT 介面] 定義 JSON Web Token 的 API 規範
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    
+    // [開發利器] 使用註解自動產生 Getter/Setter (編譯時期)
+	compileOnly 'org.projectlombok:lombok'
+    
+    // [熱部署] 程式修改後自動重啟伺服器，提升開發效率
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    
+    // [MySQL 驅動] 程式執行時連結 MySQL 資料庫的驅動程式
+	runtimeOnly 'com.mysql:mysql-connector-j'
+    
+    // [JWT 實作] 執行時期所需的 JWT 加密與解析邏輯
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    
+    // [Lombok 處理器] 讓編譯器能識別 Lombok 註解並產生代碼
+	annotationProcessor 'org.projectlombok:lombok'
+    
+    // [單元測試] 提供測試框架與 Security 測試支援
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
