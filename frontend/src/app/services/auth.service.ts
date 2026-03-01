@@ -69,12 +69,15 @@ export class AuthService {
     });
   }
 
-  /**
-   * [修正] 路徑改為 /profile 並對齊 AppResponse 結構
-   */
   fetchUserProfile() {
-    return this.http.get<any>('http://localhost:8080/api/users/profile').pipe(
-      map(res => res.data as User), // 從 data 欄位提取 User 物件
+    // 增加時間戳記防止瀏覽器快取含有 401 的 200 OK AppResponse (導致怎麼登入都抓到舊的 401 null data)
+    return this.http.get<any>(`http://localhost:8080/api/users/profile?t=${new Date().getTime()}`).pipe(
+      map(res => {
+        if (res.code !== 200) {
+          throw new Error(res.message || '無法取得使用者資料');
+        }
+        return res.data as User;
+      }),
       tap(user => {
         this.currentUser.set(user);
       })

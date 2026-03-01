@@ -4,10 +4,6 @@ import { Survey } from '../models/survey.model';
 import { SurveyStats } from '../models/survey-stats.model';
 import { map, Observable } from 'rxjs';
 
-/**
- * [修正版] SurveyService
- * 確保所有方法都正確從 AppResponse.data 中提取資料
- */
 @Injectable({
   providedIn: 'root'
 })
@@ -17,86 +13,61 @@ export class SurveyService {
   private readonly ADMIN_API_URL = 'http://localhost:8080/api/admin/surveys';
   private readonly PUBLIC_API_URL = 'http://localhost:8080/api/surveys';
 
-  /**
-   * [修正] 取得所有可填寫的問卷列表 (前台)
-   */
   getActiveSurveys(): Observable<Survey[]> {
-    return this.http.get<any>(this.PUBLIC_API_URL).pipe(
-      map(res => res.data as Survey[])
-    );
+    return this.http.get<any>(this.PUBLIC_API_URL).pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 取得所有問卷列表 (管理員)
-   */
   getAllSurveys(): Observable<Survey[]> {
-    return this.http.get<any>(this.ADMIN_API_URL).pipe(
-      map(res => res.data as Survey[])
-    );
+    return this.http.get<any>(this.ADMIN_API_URL).pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 取得問卷詳情 (管理員編輯用)
-   */
   getAdminSurveyById(id: number): Observable<Survey> {
-    return this.http.get<any>(`${this.ADMIN_API_URL}/${id}`).pipe(
-      map(res => res.data as Survey)
-    );
+    return this.http.get<any>(`${this.ADMIN_API_URL}/${id}`).pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 取得問卷詳情 (填寫用)
-   */
   getSurveyById(id: number): Observable<Survey> {
-    return this.http.get<any>(`${this.PUBLIC_API_URL}/${id}/details`).pipe(
-      map(res => res.data as Survey)
-    );
+    return this.http.get<any>(`${this.PUBLIC_API_URL}/${id}/details`).pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 提交問卷答案
-   */
-  submitResponse(surveyId: number, response: any): Observable<void> {
-    return this.http.post<any>(`${this.PUBLIC_API_URL}/${surveyId}/submit`, response).pipe(
-      map(res => res.data)
-    );
+  // === User Session API ===
+  saveToSession(response: any): Observable<any> {
+    return this.http.post<any>(`${this.PUBLIC_API_URL}/session-store`, response);
   }
 
-  /**
-   * [修正] 儲存問卷 (新增或更新)
-   */
+  confirmSubmit(): Observable<any> {
+    return this.http.post<any>(`${this.PUBLIC_API_URL}/confirm`, {});
+  }
+
+  // === Admin Session API ===
+  saveAdminSurveyToSession(survey: Survey): Observable<any> {
+    return this.http.post<any>(`${this.ADMIN_API_URL}/session-store`, survey);
+  }
+
+  getAdminSurveyFromSession(): Observable<Survey> {
+    return this.http.get<any>(`${this.ADMIN_API_URL}/session-get`).pipe(map(res => res.data));
+  }
+
+  confirmAdminSubmit(isPublish: boolean): Observable<any> {
+    return this.http.post<any>(`${this.ADMIN_API_URL}/confirm-commit?isPublish=${isPublish}`, {});
+  }
+
+  // === Base CRUD ===
   saveSurvey(survey: Survey): Observable<Survey> {
     const request = survey.id ? 
       this.http.put<any>(`${this.ADMIN_API_URL}/${survey.id}`, survey) :
       this.http.post<any>(this.ADMIN_API_URL, survey);
-    
-    return request.pipe(map(res => res.data as Survey));
+    return request.pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 刪除問卷
-   */
   deleteSurvey(id: number): Observable<void> {
-    return this.http.delete<any>(`${this.ADMIN_API_URL}/${id}`).pipe(
-      map(res => res.data)
-    );
+    return this.http.delete<any>(`${this.ADMIN_API_URL}/${id}`).pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 取得問卷統計數據 (管理員使用)
-   */
   getSurveyStats(id: number): Observable<SurveyStats> {
-    return this.http.get<any>(`${this.ADMIN_API_URL}/${id}/stats`).pipe(
-      map(res => res.data as SurveyStats)
-    );
+    return this.http.get<any>(`${this.ADMIN_API_URL}/${id}/stats`).pipe(map(res => res.data));
   }
 
-  /**
-   * [修正] 取得個人填寫紀錄 (前台)
-   */
   getUserHistory(): Observable<any[]> {
-    return this.http.get<any>(`${this.PUBLIC_API_URL}/history`).pipe(
-      map(res => res.data as any[])
-    );
+    return this.http.get<any>(`${this.PUBLIC_API_URL}/history`).pipe(map(res => res.data));
   }
 }

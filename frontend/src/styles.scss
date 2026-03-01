@@ -13,22 +13,46 @@
     --border-color: #BCAAA4;
 }
 
-/* 確保 Material 與 PrimeNG 共存時的基礎樣式正確 */
-html,
-body {
-    height: 100%;
-    background-color: var(--bg-beige);
+/* 強制將全域設定為亮色模式，解決系統深色模式下文字變白的問題 */
+:root {
+    color-scheme: light;
 }
 
-/* 確保 Material 字體與基礎樣式正確 */
 html,
 body {
     height: 100%;
+    background-color: var(--bg-beige) !important;
+    color: #333333 !important; /* 強制預設文字為深色 */
 }
 
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* 修正 Angular Material 卡片在系統深色模式下的反白問題 */
+.mat-mdc-card {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+}
+
+.mat-mdc-card-title, .mat-mdc-card-subtitle {
+    color: #111111 !important;
+}
+
+/* 修正表單內部文字、標籤與佔位符的顏色對比度 */
+.mat-mdc-form-field {
+    --mdc-outlined-text-field-input-text-color: #333333;
+    --mdc-outlined-text-field-input-placeholder-color: #888888;
+    --mdc-outlined-text-field-label-text-color: #555555;
+    --mdc-outlined-text-field-hover-label-text-color: #333333;
+    --mdc-outlined-text-field-caret-color: var(--primary-color);
+}
+
+/* 修正禁用按鈕在淺色背景下的能見度 */
+.mat-mdc-raised-button:disabled, .mat-mdc-button:disabled {
+    background-color: #e3e3e3 !important;
+    color: #757575 !important;
 }
 
 /* 

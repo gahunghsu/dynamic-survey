@@ -17,10 +17,10 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     
     /**
      * [教學重點] 自定義查詢 (Query Method)
-     * 這裡使用了 JPQL 來查詢符合「已發佈」且「在有效日期內」的問卷。
+     * 使用資料庫內建的 CURRENT_DATE 確保比對的是當下時間。
      */
-    @Query("SELECT s FROM Survey s WHERE s.status = 'PUBLISHED' AND s.startDate <= :today AND s.endDate >= :today")
-    List<Survey> findActiveSurveys(@Param("today") LocalDate today);
+    @Query("SELECT s FROM Survey s WHERE s.status = 'PUBLISHED' AND s.startDate <= CURRENT_DATE AND s.endDate >= CURRENT_DATE")
+    List<Survey> findActiveSurveys();
 
     /**
      * [教學重點] 多條件動態篩選
